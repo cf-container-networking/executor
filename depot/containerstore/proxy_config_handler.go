@@ -321,6 +321,8 @@ func generateProxyConfig(
 		return nil, fmt.Errorf("generating listeners: %s", err)
 	}
 
+	garbaj := proto_types.Value_StringValue{"more garbaj"}
+
 	config := &envoy_v2_bootstrap.Bootstrap{
 		Admin: &envoy_v2_bootstrap.Admin{
 			AccessLogPath: AdminAccessLog,
@@ -336,6 +338,14 @@ func generateProxyConfig(
 		Node: &envoy_v2_core.Node{
 			Id:      fmt.Sprintf("sidecar~%s~%s~x", container.InternalIP, container.Guid),
 			Cluster: "proxy-cluster",
+			Metadata: &proto_types.Struct{
+				Fields: map[string]*proto_types.Value{
+					"TLS_CLIENT_CERT": &proto_types.Value{Kind: &garbaj},
+					// model.NodeMetadataTLSClientRootCert: &proto_types.Value_StringValue{
+					// {proto_types.StringValue: "tlsClientRootCert"},
+					// },
+				},
+			},
 		},
 		StaticResources: &envoy_v2_bootstrap.Bootstrap_StaticResources{
 			Listeners: listeners,
