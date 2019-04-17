@@ -9,6 +9,7 @@ import (
 	"io"
 	"math/big"
 	"net"
+	"net/url"
 	"os"
 	"time"
 
@@ -328,6 +329,8 @@ func createCertificateTemplate(ipaddress, guid string, notBefore, notAfter time.
 	} else {
 		ipaddr = []net.IP{net.ParseIP(ipaddress)}
 	}
+
+	spiffeURL, _ := url.Parse("spiffe://cluster.local/ns/default/sa/default")
 	return &x509.Certificate{
 		SerialNumber: big.NewInt(0),
 		Subject: pkix.Name{
@@ -336,6 +339,7 @@ func createCertificateTemplate(ipaddress, guid string, notBefore, notAfter time.
 		},
 		IPAddresses: ipaddr,
 		DNSNames:    []string{guid},
+		URIs:        []*url.URL{spiffeURL},
 		NotBefore:   notBefore,
 		NotAfter:    notAfter,
 		KeyUsage:    x509.KeyUsageDigitalSignature | x509.KeyUsageKeyEncipherment | x509.KeyUsageKeyAgreement,

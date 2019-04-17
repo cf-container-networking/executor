@@ -518,9 +518,9 @@ var _ = Describe("ProxyConfigHandler", func() {
 
 			Expect(proxyConfig.Node.Id).To(Equal(fmt.Sprintf("sidecar~10.0.0.1~%s~x", container.Guid)))
 			Expect(proxyConfig.Node.Cluster).To(Equal("proxy-cluster"))
-			Expect(proxyConfig.Node.Metadata.Fields["TLS_SERVER_CERT_CHAIN"].Kind).To(Equal(&proto_types.Value_StringValue{StringValue: "/etc/cf-instance-credentials"}))
-			Expect(proxyConfig.Node.Metadata.Fields["TLS_SERVER_KEY"].Kind).To(Equal(&proto_types.Value_StringValue{StringValue: "/etc/cf-instance-credentials"}))
-			Expect(proxyConfig.Node.Metadata.Fields["TLS_SERVER_ROOT_CERT"].Kind).To(Equal(&proto_types.Value_StringValue{StringValue: "/etc/cf-system-certificates"}))
+			Expect(proxyConfig.Node.Metadata.Fields["TLS_SERVER_CERT_CHAIN"].Kind).To(Equal(&proto_types.Value_StringValue{StringValue: "/etc/cf-instance-credentials/instance.crt"}))
+			Expect(proxyConfig.Node.Metadata.Fields["TLS_SERVER_KEY"].Kind).To(Equal(&proto_types.Value_StringValue{StringValue: "/etc/cf-instance-credentials/instance.key"}))
+			Expect(proxyConfig.Node.Metadata.Fields["TLS_SERVER_ROOT_CERT"].Kind).To(Equal(&proto_types.Value_StringValue{StringValue: "/etc/cf-instance-credentials/instance.crt"}))
 
 			Expect(proxyConfig.StaticResources.Clusters).To(HaveLen(2))
 			expectedCluster{

@@ -340,17 +340,17 @@ func generateProxyConfig(
 				Fields: map[string]*proto_types.Value{
 					"TLS_SERVER_CERT_CHAIN": &proto_types.Value{
 						Kind: &proto_types.Value_StringValue{
-							StringValue: "/etc/cf-instance-credentials",
+							StringValue: "/etc/cf-instance-credentials/instance.crt",
 						},
 					},
 					"TLS_SERVER_KEY": &proto_types.Value{
 						Kind: &proto_types.Value_StringValue{
-							StringValue: "/etc/cf-instance-credentials",
+							StringValue: "/etc/cf-instance-credentials/instance.key",
 						},
 					},
 					"TLS_SERVER_ROOT_CERT": &proto_types.Value{
 						Kind: &proto_types.Value_StringValue{
-							StringValue: "/etc/cf-system-certificates",
+							StringValue: "/etc/cf-instance-credentials/instance.crt",
 						},
 					},
 				},
