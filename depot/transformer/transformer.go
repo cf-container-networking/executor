@@ -724,7 +724,7 @@ func (t *transformer) transformContainerProxyStep(
 	envoyArgs := []string{
 		"-c", "/etc/cf-assets/envoy_config/envoy.yaml",
 		"--drain-time-s", strconv.Itoa(int(t.drainWait.Seconds())),
-		"--log-level", "critical",
+		"--log-level", "debug",
 	}
 
 	runAction := envoyRunAction(envoyArgs)

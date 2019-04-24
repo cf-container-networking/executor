@@ -357,6 +357,25 @@ func generateProxyConfig(
 			},
 		},
 		StaticResources: &envoy_v2_bootstrap.Bootstrap_StaticResources{
+			Secrets: []envoy_v2_auth.Secret{
+				{
+					Name: "server-cert-and-key",
+					Type: &envoy_v2_auth.Secret_TlsCertificate{
+						TlsCertificate: &envoy_v2_auth.TlsCertificate{
+							CertificateChain: &envoy_v2_core.DataSource{
+								Specifier: &envoy_v2_core.DataSource_Filename{
+									Filename: "/etc/cf-instance-credentials/instance.crt",
+								},
+							},
+							PrivateKey: &envoy_v2_core.DataSource{
+								Specifier: &envoy_v2_core.DataSource_Filename{
+									Filename: "/etc/cf-instance-credentials/instance.key",
+								},
+							},
+						},
+					},
+				},
+			},
 			Listeners: listeners,
 		},
 	}
@@ -471,11 +490,11 @@ func generateListeners(container executor.Container, requireClientCerts bool) ([
 							TlsCertificateSdsSecretConfigs: []*envoy_v2_auth.SdsSecretConfig{
 								{
 									Name: "server-cert-and-key",
-									SdsConfig: &envoy_v2_core.ConfigSource{
-										ConfigSourceSpecifier: &envoy_v2_core.ConfigSource_Path{
-											Path: "/etc/cf-assets/envoy_config/sds-server-cert-and-key.yaml",
-										},
-									},
+									//SdsConfig: &envoy_v2_core.ConfigSource{
+									//	ConfigSourceSpecifier: &envoy_v2_core.ConfigSource_Path{
+									//		Path: "/etc/cf-assets/envoy_config/sds-server-cert-and-key.yaml",
+									//	},
+									//},
 								},
 							},
 							TlsParams: &envoy_v2_auth.TlsParameters{
