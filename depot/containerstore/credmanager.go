@@ -11,6 +11,7 @@ import (
 	"net"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	multierror "github.com/hashicorp/go-multierror"
@@ -33,6 +34,7 @@ const (
 type Credential struct {
 	Cert string
 	Key  string
+	Ca   string
 }
 
 //go:generate counterfeiter -o containerstorefakes/fake_cred_manager.go . CredManager
@@ -301,15 +303,43 @@ func (c *credManager) generateCreds(logger lager.Logger, container executor.Cont
 	if err != nil {
 		return Credential{}, err
 	}
+	//
+	//err = pemEncode(c.CaCert.Raw, certificatePEMBlockType, certificateWriter)
+	//if err != nil {
+	//	return Credential{}, err
+	//}
 
-	err = pemEncode(c.CaCert.Raw, certificatePEMBlockType, certificateWriter)
+	var caBuf bytes.Buffer
+	caWriter := &caBuf
+	err = pemEncode(c.CaCert.Raw, certificatePEMBlockType, caWriter)
 	if err != nil {
 		return Credential{}, err
 	}
 
+	concattedCA := `-----BEGIN CERTIFICATE-----
+MIIDCTCCAfGgAwIBAgIUd1jZFWZRWXP0/r9gA0c8FPmyqIwwDQYJKoZIhvcNAQEL
+BQAwFDESMBAGA1UEAxMJYXBwUm9vdENBMB4XDTE5MDQxNTEzMzA0M1oXDTIwMDQx
+NDEzMzA0M1owFDESMBAGA1UEAxMJYXBwUm9vdENBMIIBIjANBgkqhkiG9w0BAQEF
+AAOCAQ8AMIIBCgKCAQEA11+jyaE3R9SWjQUhDzYQsJzUI1ir/ZumFp6iewcjOPgV
+aNnxJju77xq8klhrEtrFLHxWm1WYQLGUbvBDFxIF7D3DGQt3bRx85yv8qfQFgnZe
+whN6Sqqv3KPG+Jazjfn6NJuBSwNlBuT02BI7iSxFJEQMJwsZWyw+t3KXD6PeoQvQ
+AiIYImVpowbEIRYnLesFdyH5G9gIpT2Xp+UDWzEtcBzXQXWrYXeh0bvH7ayTRSMR
+ZnZcwKMn94Zov5wBakflNcRBZ9MWGEj6U1zStlkmprS2yyLuU0GklMhqRZ1TMpIX
+sSNyGzNMxJg1Qhs4Qdg8S9NMzrJ3UQivm2XJ9UpwBwIDAQABo1MwUTAdBgNVHQ4E
+FgQUn/0R+NlgebpMexuHfcvwRWemPO0wHwYDVR0jBBgwFoAUn/0R+NlgebpMexuH
+fcvwRWemPO0wDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAWa7z
+SEmULmVmdYn94yScGNZcya5abiYP3pV5CVqat0Nvczl0UptWwNlgOjRmcZApJd4F
+r+P5bZbXaIv4jx6otLmQ1yNyKOt4I7pJ1wZ42uqtcYc2LLzVR4CZNQ9grVCEKosd
+WG67x+3olYjMdindDmTQOgnihJ9Nk19N7OQGC0C7Wdeyh2P4eKYaNR018F+uIhqm
+xyCofw7ryMwuLuG9wZRG2hbAlP43tIncu/70LlRM5cLluXSpdOeWndSSXwJzozqT
+xfEAGBMmLrnPjyatxzSD+oDUD89oo9f4tv8pjdH3uLr9gMiioAB2nbT04/sghhI+
+DNvZjr3DfdO9KBo+kg==
+-----END CERTIFICATE-----`
+	concattedCA = strings.Join([]string{concattedCA, caBuf.String()}, "\n")
 	creds := Credential{
 		Cert: certificateBuf.String(),
 		Key:  keyBuf.String(),
+		Ca:   concattedCA,
 	}
 	return creds, nil
 }

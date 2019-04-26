@@ -54,6 +54,8 @@ func (h *InstanceIdentityHandler) Update(cred Credential, container executor.Con
 	tmpInstanceKeyPath := instanceKeyPath + ".tmp"
 	certificatePath := filepath.Join(h.credDir, container.Guid, "instance.crt")
 	tmpCertificatePath := certificatePath + ".tmp"
+	caPath := filepath.Join(h.credDir, container.Guid, "ca.crt")
+	tmpCaPath := caPath + ".tmp"
 
 	instanceKey, err := os.Create(tmpInstanceKeyPath)
 	if err != nil {
@@ -67,12 +69,23 @@ func (h *InstanceIdentityHandler) Update(cred Credential, container executor.Con
 	}
 	defer certificate.Close()
 
+	ca, err := os.Create(tmpCaPath)
+	if err != nil {
+		return err
+	}
+	defer ca.Close()
+
 	_, err = certificate.Write([]byte(cred.Cert))
 	if err != nil {
 		return err
 	}
 
 	_, err = instanceKey.Write([]byte(cred.Key))
+	if err != nil {
+		return err
+	}
+
+	_, err = ca.Write([]byte(cred.Ca))
 	if err != nil {
 		return err
 	}
@@ -87,12 +100,22 @@ func (h *InstanceIdentityHandler) Update(cred Credential, container executor.Con
 		return err
 	}
 
+	err = ca.Close()
+	if err != nil {
+		return err
+	}
+
 	err = os.Rename(tmpInstanceKeyPath, instanceKeyPath)
 	if err != nil {
 		return err
 	}
 
 	err = os.Rename(tmpCertificatePath, certificatePath)
+	if err != nil {
+		return err
+	}
+
+	err = os.Rename(tmpCaPath, caPath)
 	if err != nil {
 		return err
 	}

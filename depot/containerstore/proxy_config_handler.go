@@ -350,7 +350,7 @@ func generateProxyConfig(
 					},
 					"TLS_SERVER_ROOT_CERT": &proto_types.Value{
 						Kind: &proto_types.Value_StringValue{
-							StringValue: "/etc/cf-instance-credentials/instance.crt",
+							StringValue: "/etc/cf-instance-credentials/ca.crt",
 						},
 					},
 				},
