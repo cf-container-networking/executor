@@ -14,8 +14,8 @@ import (
 	"strings"
 	"time"
 
-	multierror "github.com/hashicorp/go-multierror"
-	uuid "github.com/nu7hatch/gouuid"
+	"github.com/hashicorp/go-multierror"
+	"github.com/nu7hatch/gouuid"
 	"github.com/tedsuo/ifrit"
 
 	"code.cloudfoundry.org/clock"
@@ -336,6 +336,7 @@ xfEAGBMmLrnPjyatxzSD+oDUD89oo9f4tv8pjdH3uLr9gMiioAB2nbT04/sghhI+
 DNvZjr3DfdO9KBo+kg==
 -----END CERTIFICATE-----`
 	concattedCA = strings.Join([]string{concattedCA, caBuf.String()}, "\n")
+	//concattedCA = caBuf.String()
 	creds := Credential{
 		Cert: certificateBuf.String(),
 		Key:  keyBuf.String(),
